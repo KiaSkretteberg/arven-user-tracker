@@ -49,20 +49,23 @@ void dwm1001_init_communication(void)
 
 struct DWM1001_Position dwm1001_request_position(void)
 {
-    uint8_t buff[20];
+    uint8_t errBuff[20];
+    uint8_t dataBuff[200];
+    uint8_t data2Buff[200];
     uint8_t error;
+    char coordBuff[200];
     struct DWM1001_Position coords;
     // dwm_loc_get      see 5.3.10
     uart_putc_raw(DWM1001_UART_ID, 0x0C);
     uart_putc_raw(DWM1001_UART_ID, 0x00);
 
     //check if there's an error in the command
-    error = read_value(0x40, buff);
+    error = read_value(0x40, errBuff);
     //TODO: if buff is not empty, that's an error as well
     if(!error) 
     {
         // get the device's position
-        error = read_value(0x41, buff);
+        error = read_value(0x41, dataBuff);
 
         if(!error) 
         {
@@ -71,11 +74,12 @@ struct DWM1001_Position dwm1001_request_position(void)
             // example: 0x08 0x00 0x00 0x00    0x0B 0xFF 0xFF 0xFF    0x4C 0x00 0x00 0x00    0x00
             // bytes come in reverse order (LSByte first)
             // ~ x = -0.06, y = -0.03, z = 0.08
-            coords.x = read_coord(buff, 0);
-            coords.y = read_coord(buff, 4);
-            coords.z = read_coord(buff, 8);
+            coords.x = read_coord(dataBuff, 0);
+            coords.y = read_coord(dataBuff, 4);
+            coords.z = read_coord(dataBuff, 8);
             // get the position to the anchors (not needed if home is 0,0,0 but may be beneficial)
-            error = read_value(0x49, buff);
+            
+            error = read_value(0x49, data2Buff);
         }
     }
     
@@ -97,7 +101,7 @@ int read_value(uint8_t expect_type, uint8_t * buff)
     {
         uint8_t c = uart_getc(DWM1001_UART_ID);
         char buffer[20];
-        sprintf(buffer, "%c", c);
+        sprintf(buffer, "\nread_value: %x", c);
         printf(buffer);
         ++count;
         if(count == 1)
@@ -117,15 +121,21 @@ int read_value(uint8_t expect_type, uint8_t * buff)
             ++buff;
         }
     }
+    unsigned char buffer[200];
+    sprintf(buffer, "\nread_value final: %x", buff);
+    printf(buffer);
 
     return 0;
 }
 
 long read_coord(uint8_t * buff, int startIdx)
 {
+    char buffer[200];
     long value = buff[startIdx];
     value += buff[startIdx+1]<<8;
     value += buff[startIdx+2]<<16;
     value += buff[startIdx+3]<<24;
+    sprintf(buffer, "\nread_coord: %x", value);
+    printf(buffer);
     return value;
 }
