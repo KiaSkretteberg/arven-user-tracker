@@ -8,9 +8,10 @@ const char WIFI_NETWORK_NAME[] = "PH1";
 const char WIFI_PASSWORD[] = "12345678";
 
 int main() {
-    float x = 0;
-    float y = 0;
-    float z = 0;
+    struct DWM1001_Position position;
+    position.x = 0;
+    position.y = 0;
+    position.z = 0;
 
     stdio_init_all();
 
@@ -22,8 +23,8 @@ int main() {
     while (true) {
         char buff[300];
         sleep_ms(500);
-        dwm1001_request_position();
-        sprintf(buff, "/set_user_location/x/%f/y/%f/z/%f", x, y, z);
+        position = dwm1001_request_position();
+        sprintf(buff, "/set_user_location/x/%f/y/%f/z/%f", position.x, position.y, position.z);
         web_request(buff);
     }
 }

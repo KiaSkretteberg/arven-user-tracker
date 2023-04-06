@@ -26,7 +26,6 @@ pico_enable_stdio_uart(arven_user 1)
 pico_add_extra_outputs(arven_user)
 
 # add our custom libraries
-add_subdirectory(atmega)
 add_subdirectory(dwm1001)
 add_subdirectory(web)
 
