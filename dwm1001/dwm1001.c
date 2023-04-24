@@ -63,11 +63,11 @@ struct DWM1001_Position dwm1001_request_position(void)
     coords.z = 0;
     coords.set = 0;
     // dwm_loc_get      see 5.3.10
-    uart_putc_raw(DWM1001_UART_ID, 0x0C);
+    uart_putc_raw(DWM1001_UART_ID, 0x02);
     uart_putc_raw(DWM1001_UART_ID, 0x00);
 
     //check if there's an error in the command
-    error = read_value(0x02, errBuff);
+    error = read_value(0x40, errBuff);
     //TODO: if buff is not empty, that's an error as well
     if(!error) 
     {
