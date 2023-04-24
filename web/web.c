@@ -109,20 +109,21 @@ int web_init(const char *ssid, const char *pass, const char *hostname,
 
 void web_request(char * uriParams)
 {
+    char uri[2049];
+    strcpy(uri, WEB_CLIENT_REQUEST_URL);
     printf("Make request to: ");
-    printf(uriParams);
-    printf(strcat(uriParams, WEB_CLIENT_REQUEST_URL));
+    printf(strcat(uri, uriParams));
     err_t err = httpc_get_file_dns(
             WEB_CLIENT_SERVER,
             WEB_CLIENT_PORT,
-            strcat(uriParams, WEB_CLIENT_REQUEST_URL),
+            uri,
             &settings,
             body_callback,
             NULL, //TODO: Pass a value to track this specific request
             NULL
         ); 
     
-    printf("status %d \n", err);
+    // printf("status %d \n", err);
 }
 
 /************************************************************************/
@@ -133,27 +134,27 @@ void result_callback(void *arg, httpc_result_t httpc_result,
         u32_t rx_content_len, u32_t srv_res, err_t err)
 {
     printf("transfer complete\n");
-    printf("local result=%d\n", httpc_result);
+    // printf("local result=%d\n", httpc_result);
     printf("http result=%d\n", srv_res);
 }
 
 err_t headers_callback(httpc_state_t *connection, void *arg, 
     struct pbuf *hdr, u16_t hdr_len, u32_t content_len)
 {
-    printf("headers recieved\n");
-    printf("content length=%d\n", content_len);
-    printf("header length %d\n", hdr_len);
+    // printf("headers recieved\n");
+    // printf("content length=%d\n", content_len);
+    // printf("header length %d\n", hdr_len);
     pbuf_copy_partial(hdr, buff, hdr->tot_len, 0);
-    printf("headers \n");
-    printf("%s", buff);
+    // printf("headers \n");
+    // printf("%s", buff);
     return ERR_OK;
 }
 
 err_t body_callback(void *arg, struct altcp_pcb *conn, 
                             struct pbuf *p, err_t err)
 {
-    printf("body\n");
+    // printf("body\n");
     pbuf_copy_partial(p, buff, p->tot_len, 0);
-    printf("%s", buff);
+    // printf("%s", buff);
     return ERR_OK;
 }
